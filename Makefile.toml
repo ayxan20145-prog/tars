@@ -1,0 +1,15 @@
+[tasks.default]
+alias = "install"
+
+[tasks.install]
+description = "install tars"
+script = [
+    "cargo build --release",
+    "sudo install -Dm755 target/release/tars /usr/local/bin"
+]
+
+[tasks.uninstall]
+description = "uninstall tars"
+script = [
+    "sudo rm -f /usr/local/bin/tars"
+]
