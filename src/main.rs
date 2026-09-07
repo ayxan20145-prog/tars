@@ -29,6 +29,12 @@ enum Commands {
         /// the archive file to extract
         archive: String,
     },
+
+    /// list the contents of a tar archive
+    List {
+        /// the archive file to list
+        archive: String,
+    },
 }
 fn main() {
     let args = Cli::parse();
@@ -53,6 +59,14 @@ fn main() {
             let mut archive = Archive::new(tar_file);
 
             archive.unpack(".").unwrap();
+        }
+        Commands::List { archive } => {
+            let tar_file = File::open(archive).unwrap();
+            let mut archive = Archive::new(tar_file);
+
+            for entry in archive.entries().unwrap() {
+                println!("{}", entry.unwrap().path().unwrap().display());
+            }
         }
     }
 }
