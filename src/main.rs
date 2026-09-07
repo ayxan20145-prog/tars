@@ -17,6 +17,10 @@ struct Cli {
 enum Commands {
     /// create a tar archive
     Archive {
+        /// use gzip compression
+        #[arg(long)]
+        gzip: bool,
+
         /// the archive file to create
         archive: String,
 
@@ -40,18 +44,43 @@ fn main() {
     let args = Cli::parse();
 
     match args.command {
-        Commands::Archive { archive, files } => {
+        Commands::Archive {
+            gzip,
+            archive,
+            files,
+        } => {
             let tar_file = File::create(archive).unwrap();
-            let mut archive = Builder::new(tar_file);
 
-            for file in files {
-                let path = Path::new(&file);
+            if gzip {
+                let gzip = flate2::write::GzEncoder::new(tar_file, flate2::Compression::default());
 
-                if path.is_dir() {
-                    archive.append_dir_all(&file, &path).unwrap();
-                } else {
-                    archive.append_path(file).unwrap();
+                let mut archive = Builder::new(gzip);
+
+                for file in files {
+                    let path = Path::new(&file);
+
+                    if path.is_dir() {
+                        archive.append_dir_all(&file, &path).unwrap();
+                    } else {
+                        archive.append_path(file).unwrap();
+                    }
                 }
+
+                archive.finish().unwrap();
+            } else {
+                let mut archive = Builder::new(tar_file);
+
+                for file in files {
+                    let path = Path::new(&file);
+
+                    if path.is_dir() {
+                        archive.append_dir_all(&file, &path).unwrap();
+                    } else {
+                        archive.append_path(file).unwrap();
+                    }
+                }
+
+                archive.finish().unwrap();
             }
         }
         Commands::Extract { archive } => {
