@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{Parser, Subcommand};
 
 #[derive(Parser)]
 #[command(
@@ -7,21 +7,24 @@ use clap::Parser;
     about = "a simple frontend for working with tar archives without having to remember complicated arguments"
 )]
 struct Cli {
-    command: String,
+    #[command(subcommand)]
+    command: Commands,
+}
+
+#[derive(Subcommand, Debug, Clone)]
+enum Commands {
+    Archive { archive: String, files: Vec<String> },
+    Extract { archive: String },
 }
 fn main() {
     let args = Cli::parse();
 
-    match args.command.as_str() {
-        "archive" => {
-            println!("coming soon")
-        }
-        "extract" => {
+    match args.command {
+        Commands::Archive { archive, files } => {
             println!("coming soon");
         }
-        _ => {
-            println!("unknown command: {}", args.command);
-            return;
+        Commands::Extract { archive } => {
+            println!("coming soon");
         }
     }
 }
