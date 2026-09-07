@@ -1,5 +1,5 @@
 use clap::{Parser, Subcommand};
-use std::fs::File;
+use std::{fs::File, path::Path};
 use tar::{Archive, Builder};
 
 #[derive(Parser)]
@@ -39,7 +39,13 @@ fn main() {
             let mut archive = Builder::new(tar_file);
 
             for file in files {
-                archive.append_path(file).unwrap();
+                let path = Path::new(&file);
+
+                if path.is_dir() {
+                    archive.append_dir_all(&file, &path).unwrap();
+                } else {
+                    archive.append_path(file).unwrap();
+                }
             }
         }
         Commands::Extract { archive } => {
