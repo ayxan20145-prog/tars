@@ -11,4 +11,17 @@ struct Cli {
 }
 fn main() {
     let args = Cli::parse();
+
+    match args.command.as_str() {
+        "archive" => {
+            println!("coming soon")
+        }
+        "extract" => {
+            println!("coming soon");
+        }
+        _ => {
+            println!("unknown command: {}", args.command);
+            return;
+        }
+    }
 }
