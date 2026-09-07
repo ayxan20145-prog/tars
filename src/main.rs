@@ -1,6 +1,6 @@
 use clap::{Parser, Subcommand};
 use std::fs::File;
-use tar::Builder;
+use tar::{Archive, Builder};
 
 #[derive(Parser)]
 #[command(
@@ -43,7 +43,10 @@ fn main() {
             }
         }
         Commands::Extract { archive } => {
-            println!("coming soon");
+            let tar_file = File::open(archive).unwrap();
+            let mut archive = Archive::new(tar_file);
+
+            archive.unpack(".").unwrap();
         }
     }
 }
